@@ -18,9 +18,7 @@ library(ggplot2)
 set.seed(12345)
 
 source("./get_data.R")
-results <- get_personal_data()
-results.p2f <- filter(results, method == "P2F")
-results.f2p <- filter(results, method == "F2P")
+
 ```
 
 

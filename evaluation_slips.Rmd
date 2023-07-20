@@ -21,7 +21,6 @@ set.seed(12345)
 
 # import data
 source("./get_data.R")
-evaluation_data <- get_evaluation_data()
 ```
 
 
@@ -31,17 +30,6 @@ evaluation_data <- get_evaluation_data()
 ```{r, echo=FALSE}
 hist(evaluation_data$slips, xlab="number of slips", ylab = "number of observations", main="Histogram for slips (all obs.)")
 
-
-p2f <- filter(evaluation_data, method == "P2F")
-f2p <- filter(evaluation_data, method == "F2P")
-
-evaluation_data_large <- filter(evaluation_data, state_type == "large")
-evaluation_data_small <- filter(evaluation_data, state_type == "small")
-
-p2f_large <- filter(p2f, state_type == "large")
-p2f_small <- filter(p2f, state_type == "small")
-f2p_large <- filter(f2p, state_type == "large")
-f2p_small <- filter(f2p, state_type == "small")
 ```
 
 
