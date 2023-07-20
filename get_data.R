@@ -105,3 +105,25 @@ p2f_large <- filter(p2f, state_type == "large")
 p2f_small <- filter(p2f, state_type == "small")
 f2p_large <- filter(f2p, state_type == "large")
 f2p_small <- filter(f2p, state_type == "small")
+
+
+
+#############################################
+##  Get data from exploration exploration  ##
+#############################################
+
+exploration_data <- read_excel("./exploration.xlsx")
+exploration_data$insightReceivedAt <- minute(exploration_data$time) + second(exploration_data$time) / 60
+exploration_data$timeExploredTotal <- ifelse(
+  !is.na(exploration_data$overall_time),
+  minute(exploration_data$overall_time) + second(exploration_data$overall_time)/60,
+  0
+)
+  
+
+exploratin_summary = as.data.frame(
+  exploration_data %>%
+    group_by(id) %>%
+    summarise(insight = sum(domainvalue), duration = max(timeExploredTotal))
+)
+
