@@ -1,0 +1,140 @@
+---
+title: "demographic"
+author: "Jonas Hurst"
+date: "2023-06-20"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd("~/ma")
+
+library(tidyverse)
+library(bootES)
+library(ggplot2)
+
+set.seed(12345)
+
+source("./get_data.R")
+results <- get_personal_data()
+results.p2f <- filter(results, method == "P2F")
+results.f2p <- filter(results, method == "F2P")
+```
+
+
+# Age
+```{r, echo=FALSE}
+results %>%
+  summarise(age.mean = mean(age), age.median = median(age), age.std_dv = sd(age))
+
+ggplot(results, aes(x=age)) +
+  geom_bar() +
+  scale_x_continuous(breaks=0:max(results$age))
+```
+
+# Gender
+```{r, echo=FALSE}
+results %>%
+  group_by(gender) %>%
+  summarise(gender.n = n())
+
+results %>%
+  group_by(method, gender) %>%
+  summarise(gender.n = n())
+```
+
+\newpage
+# SUS score
+
+```{r, echo=FALSE}
+hist_breakpoints = seq(45, max(results$sus.score), by=5)
+hist_breakpoints = append(hist_breakpoints, tail(hist_breakpoints, n=1)+5)
+
+ggplot(results, aes(x=sus.score, fill=method)) +
+  geom_histogram(breaks=hist_breakpoints, position="dodge", col="black", aes(y = after_stat(density*width)*100)) +
+  scale_fill_manual(values = c("P2F" = p2f_color, "F2P" = f2p_color)) +
+  scale_x_continuous(breaks = hist_breakpoints) +
+  labs(title="Histogram of SUS by method", x="SUS score", y="% of participants in method") +
+  theme(legend.position = c(0.95, 0.9))
+```
+
+```{r, echo=FALSE, fig.asp=0.25}
+p2f.sus.bootES <- bootES(results.p2f$sus.score, R=5000)
+f2p.sus.bootES <- bootES(results.f2p$sus.score, R=5000)
+
+p2f.sus.bootES
+f2p.sus.bootES
+
+sus.bootES.results <- data.frame(
+  method = c("P2F", "F2P"),
+  mean = c(p2f.sus.bootES$t0, f2p.sus.bootES$t0),
+  mean.min = c(p2f.sus.bootES$bounds[1], f2p.sus.bootES$bounds[1]),
+  mean.max = c(p2f.sus.bootES$bounds[2], f2p.sus.bootES$bounds[2])
+)
+
+ggplot(sus.bootES.results, aes(y=method, x=mean, xmin=mean.min, xmax=mean.max, color=method)) +
+  geom_pointrange() +
+  scale_color_manual(values = c("P2F" = p2f_color, "F2P" = f2p_color)) +
+  theme(axis.title.x = element_blank(), axis.title.y = element_blank(), legend.position = "none")
+ggsave("./graphs/sus.png", width=12, height=3, units = "cm")
+
+
+bootES(results, data.col = "sus.score", group.col = "method", contrast = c("P2F", "F2P"), R=5000)
+```
+
+
+\newpage
+# TLX
+```{r, echo=FALSE, fig.asp=0.3}
+p2f.tlx.mental.bootES <- bootES(results.p2f$tlx.mental_demand, R=5000)
+f2p.tlx.mental.bootES <- bootES(results.f2p$tlx.mental_demand, R=5000)
+
+p2f.tlx.physical.bootES <- bootES(results.p2f$tlx.physical_demand, R=5000)
+f2p.tlx.physical.bootES <- bootES(results.f2p$tlx.physical_demand, R=5000)
+
+p2f.tlx.frustration.bootES <- bootES(results.p2f$tlx.frustration, R=5000)
+f2p.tlx.frustration.bootES <- bootES(results.f2p$tlx.frustration, R=5000)
+
+tlx.bootES.result <- data.frame(
+  method = c("P2F", "F2P", "P2F", "F2P", "P2F", "F2P"),
+  meassure = c("mental load", "mental load", "physical load", "physical load", "frustration", "frustration"),
+  ordering = c(NA, NA, NA, NA, NA, NA),
+  mean = c(p2f.tlx.mental.bootES$t0, f2p.tlx.mental.bootES$t0, p2f.tlx.physical.bootES$t0, f2p.tlx.physical.bootES$t0, p2f.tlx.frustration.bootES$t0, f2p.tlx.frustration.bootES$t0),
+  mean.min = c(p2f.tlx.mental.bootES$bounds[1], f2p.tlx.mental.bootES$bounds[1], p2f.tlx.physical.bootES$bounds[1], f2p.tlx.physical.bootES$bounds[1], p2f.tlx.frustration.bootES$bounds[1], f2p.tlx.frustration.bootES$bounds[1]),
+  mean.max = c(p2f.tlx.mental.bootES$bounds[2], f2p.tlx.mental.bootES$bounds[2], p2f.tlx.physical.bootES$bounds[2], f2p.tlx.physical.bootES$bounds[2], p2f.tlx.frustration.bootES$bounds[2], f2p.tlx.frustration.bootES$bounds[2])
+)
+
+tlx.bootES.result$ordering <- paste(tlx.bootES.result$meassure, tlx.bootES.result$method, sep=": ")
+
+ggplot(tlx.bootES.result, aes(y=ordering, x=mean, xmin=mean.min, xmax=mean.max, color=method)) +
+  geom_pointrange() +
+  scale_color_manual(values = c("P2F" = p2f_color, "F2P" = f2p_color)) +
+  theme(axis.title.x = element_blank(), axis.title.y = element_blank(), legend.position = "none")
+ggsave("./graphs/tlx.png", width=15, height=5, units = "cm")
+
+tlx.bootES.result %>% select(-c("method", "meassure"))
+
+```
+
+Difference in bootstrapped mean
+
+Physical demand:
+```{r, echo=FALSE}
+bootES(results, data.col = "tlx.physical_demand", group.col = "method", contrast = c("P2F", "F2P"), R=5000)
+```
+
+
+Mental demand:
+```{r, echo=FALSE}
+bootES(results, data.col = "tlx.mental_demand", group.col = "method", contrast = c("P2F", "F2P"), R=5000)
+```
+
+frustration:
+```{r, echo=FALSE}
+bootES(results, data.col = "tlx.frustration", group.col = "method", contrast = c("P2F", "F2P"), R=5000)
+```
+
+\newpage
+## Correlations

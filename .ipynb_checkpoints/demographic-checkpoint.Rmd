@@ -1,0 +1,83 @@
+---
+title: "demographic"
+author: "Jonas Hurst"
+date: "2023-06-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd("~/ma")
+```
+
+
+```{r, include=FALSE}
+# load libraries
+library(tidyverse)
+```
+
+```{r, include=FALSE}
+# load csv file
+results <- read.csv(file = 'study_results.csv')
+colnames(results) <- c("time",
+                       "id",
+                       "method",
+                       "gender",
+                       "age",
+                       "exp.gesture",
+                       "exp.maps",
+                       "exp.energy",
+                       "sus.use_frequently",
+                       "sus.complex",
+                       "sus.easy_to_use",
+                       "sus.need_support",
+                       "sus.well_integrated",
+                       "sus.inconsistency",
+                       "sus.most_people_use_frequently",
+                       "sus.cumbersome",
+                       "sus.confident",
+                       "sus.learn_new_things",
+                       "tlx.mental_demand",
+                       "tlx.physical_demand",
+                       "tlx.frustration",
+                       "comment")
+results <- filter(results, id <= 90)
+results <- filter(results, id != 5)
+```
+
+
+## Age
+```{r}
+results %>%
+  summarise(mean = mean(age), median = median(age), std_dv = sd(age))
+```
+
+## Gender
+```{r}
+results %>%
+  group_by(gender) %>%
+  summarise(n = n())
+```
+
+## SUS score
+```{r}
+# Compute Score
+results["sus.score"] <-
+  (
+  results["sus.use_frequently"] - 1 +
+  results["sus.easy_to_use"] - 1 + 
+  results["sus.well_integrated"] - 1 +
+  results["sus.most_people_use_frequently"] - 1 + 
+  results["sus.confident"] - 1 +
+  5 - results["sus.complex"] +
+  5 - results["sus.need_support"] +
+  5 - results["sus.inconsistency"] +
+  5 - results["sus.cumbersome"] +
+  5 - results["sus.learn_new_things"]
+  ) * 2.5
+
+# avg score based on method
+results %>%
+  group_by(method) %>%
+  summarise(mean = mean(sus.score), stddv = sd(sus.score))
+```

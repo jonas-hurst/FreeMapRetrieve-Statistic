@@ -1,0 +1,214 @@
+---
+title: "Evaluation for Efficiency (time)"
+author: "Jonas Hurst"
+date: "2023-06-24"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd("~/ma")
+library(tidyverse)
+library(bootES)
+library(ggplot2)
+
+set.seed(12345)
+
+# import data
+source("./get_data.R")
+evaluation_data <- get_evaluation_data()
+
+p2f_color = rgb(1, 0, 0, 1/2)
+f2p_color = rgb(0, 0, 1, 1/2)
+```
+
+
+# All data
+
+```{r, echo=FALSE}
+hist(evaluation_data$time, xlab = "time (s)", ylab = "number", main = "history for efficiency (all obs.)")
+
+
+p2f <- filter(evaluation_data, method == "P2F")
+f2p <- filter(evaluation_data, method == "F2P")
+
+evaluation_data_large <- filter(evaluation_data, state_type == "large")
+evaluation_data_small <- filter(evaluation_data, state_type == "small")
+
+p2f_large <- filter(p2f, state_type == "large")
+p2f_small <- filter(p2f, state_type == "small")
+f2p_large <- filter(f2p, state_type == "large")
+f2p_small <- filter(f2p, state_type == "small")
+```
+
+# Efficiency (time to Retrieve)
+
+
+```{r, include=FALSE}
+hist_breakpoints = seq(0, max(evaluation_data$time), by=5)
+hist_breakpoints = append(hist_breakpoints, tail(hist_breakpoints, n=1)+5)
+```
+
+
+```{r, echo=FALSE}
+ggplot(evaluation_data, aes(x = time, fill = method)) +
+  geom_histogram(breaks=hist_breakpoints, position="dodge", col="black", aes(y = after_stat(density*width)*100)) +
+  scale_fill_manual(values = c("P2F" = p2f_color, "F2P" = f2p_color)) +
+  scale_x_continuous(breaks = hist_breakpoints) +
+  labs(x="Efficiency (time (s) / polygon)", y="% of polygons in method") +
+  theme(legend.position = c(0.94, 0.92), legend.title = element_blank())
+ggsave("./graphs/time_histogram.png", width=15, height=8, units = "cm")
+
+evaluation_data %>% 
+  mutate(bin = cut(time, breaks=hist_breakpoints)) %>%
+  group_by(method, bin) %>%
+  summarise(count = n(), .groups = "rowwise")%>%
+  print(n=Inf)
+
+evaluation_data %>%
+  group_by(method)%>%
+  summarize(count = n(), mean = mean(time), median = median(time), std.dv. = sd(time))
+
+p2f.time.bootES <- bootES(p2f$time, R=5000)
+f2p.time.bootES <- bootES(f2p$time, R=5000)
+
+time.bootESsummary <- data.frame(
+  method = c("P2F", "F2P"),
+  mean = c(p2f.time.bootES$t0, f2p.time.bootES$t0),
+  mean.min = c(p2f.time.bootES$bounds[1], f2p.time.bootES$bounds[1]),
+  mean.max = c(p2f.time.bootES$bounds[2], f2p.time.bootES$bounds[2])
+)
+```
+
+\newpage
+Mean with bootstrapped 95% CI
+
+```{r, echo=FALSE, fig.asp=0.25}
+ggplot(time.bootESsummary,
+       aes(y = method, x=mean, xmin = mean.min, xmax = mean.max, color = method)) +
+  geom_pointrange() +
+  scale_color_manual(values = c("P2F" = p2f_color, "F2P" = f2p_color)) +
+  scale_fill_discrete(breaks = c("P2F", "F2P")) +
+  theme(axis.title.x = element_blank(), axis.title.y = element_blank(), legend.position = "none")
+ggsave("./graphs/time_means_all.png", width=12, height=3, units = "cm")
+
+p2f.time.bootES
+f2p.time.bootES
+
+bootES(evaluation_data, data.col="time", group.col = "method", contrast=c("P2F", "F2P"), R=5000)
+```
+
+
+
+\newpage
+## Comparison large/small beetween techniques
+### Large polygons:
+
+```{r, echo=FALSE}
+p2f.time.large.bootES <- bootES(p2f_large$time, R=5000)
+f2p.time.large.bootES <- bootES(f2p_large$time, R=5000)
+
+time.large.bootESSummary <- data.frame(
+  method = c("P2F", "F2P"),
+  mean = c(p2f.time.large.bootES$t0, f2p.time.large.bootES$t0),
+  mean.min = c(p2f.time.large.bootES$bounds[1], f2p.time.large.bootES$bounds[1]),
+  mean.max = c(p2f.time.large.bootES$bounds[2], f2p.time.large.bootES$bounds[2])
+)
+
+
+
+```
+
+
+Mean with bootstrapped 95% CI
+
+```{r, echo=FALSE, fig.asp=0.25}
+ggplot(time.large.bootESSummary, aes(y=method, x=mean, xmin = mean.min, xmax = mean.max, color=method))+
+  geom_pointrange() +
+  scale_color_manual(values = c("P2F" = p2f_color, "F2P" = f2p_color)) +
+  scale_fill_discrete(breaks = c("P2F", "F2P")) +
+  theme(axis.title.x = element_blank(), axis.title.y = element_blank(), legend.position = "none")
+ggsave("./graphs/time_means_large.png", width=12, height=3, units = "cm")
+
+p2f.time.large.bootES
+f2p.time.large.bootES
+
+bootES(evaluation_data_large, data.col="time", group.col = "method", contrast=c("P2F", "F2P"), R=5000)
+```
+
+
+
+\newpage
+### Small polygons:
+
+```{r, echo=FALSE}
+p2f.time.small.bootES <- bootES(p2f_small$time, R=5000)
+f2p.time.small.bootES <- bootES(f2p_small$time, R=5000)
+
+time.small.bootESSummary <- data.frame(
+  method = c("P2F", "F2P"),
+  mean = c(p2f.time.small.bootES$t0, f2p.time.small.bootES$t0),
+  mean.min = c(p2f.time.small.bootES$bounds[1], f2p.time.small.bootES$bounds[1]),
+  mean.max = c(p2f.time.small.bootES$bounds[2], f2p.time.small.bootES$bounds[2])
+)
+```
+
+
+Mean with bootstrapped 95% CI
+
+```{r, echo=FALSE, fig.asp=0.25}
+ggplot(time.small.bootESSummary, aes(y=method, x=mean, xmin = mean.min, xmax = mean.max, color=method))+
+  geom_pointrange() +
+  scale_color_manual(values = c("P2F" = p2f_color, "F2P" = f2p_color)) +
+  scale_fill_discrete(breaks = c("P2F", "F2P")) +
+  theme(axis.title.x = element_blank(), axis.title.y = element_blank(), legend.position = "none")
+ggsave("./graphs/time_means_small.png", width=12, height=3, units = "cm")
+
+p2f.time.small.bootES
+f2p.time.small.bootES
+
+bootES(evaluation_data_small, data.col="time", group.col = "method", contrast=c("P2F", "F2P"), R=5000)
+```
+
+
+
+Reason (maybe?): Unexpected behavior of how participants used the fine mechanism:
+
+* In P2F they used it as a "break" on the pointer to not move it away while selecting.
+  As selection with coarse pointing was already quite good, few additional fine pointing was necessary
+* In F2P, they used it to precisely pan the map, which took a lot of time
+
+\newpage
+## Comparison large/small within technique
+### P2F
+
+```{r, echo=FALSE}
+bootES(p2f, data.col="time", group.col = "state_type", contrast=c("large", "small"), R=5000)
+```
+
+
+### F2P
+
+```{r, echo=FALSE}
+bootES(f2p, data.col="time", group.col = "state_type", contrast=c("large", "small"), R=5000)
+```
+
+
+
+\newpage
+## Learnability
+
+```{r, echo=FALSE}
+ggplot(evaluation_data, aes(x=state_number, y=time, group=id, color=method))+
+  geom_line() +
+  geom_point() +
+  scale_x_continuous(breaks = 1:6)+
+  scale_color_manual(values = c("P2F" = p2f_color, "F2P" = f2p_color))
+```
+
+Todo: test this with Linear Mixed Model

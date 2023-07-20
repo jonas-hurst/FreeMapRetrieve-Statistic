@@ -1,0 +1,54 @@
+Zeitstempel,"Participant ID
+Teilnehmer*in ID","Retrieve-Method
+Retrieve-Methode","Gender
+Geschlecht","What age are you?
+Wie alt sind Sie?","How often do you use hand gestures to interact with computer systems?
+Wie oft benutzen Sie Handgesten, um mit Computern zu interagieren?","How would you rate your skills in reading and interpreting thematic maps in general?
+Wie würden Sie allgemein Ihre eigenen Fähigkeiten einschätzen, thematische Karten zu lesen und zu interpretieren?","How familiar are you with usage of renewable energy in different countries globally?
+Wie vertraut sind Sie mit der Nutzung erneuerbarer Energien in verschiedenen Ländern weltweit?","I think that I would like to use this system frequently.
+Ich glaube, dass ich das System gerne häufig benutzen würde.","I found the system unnecessarily complex.
+Ich fand das System unnötig komplex.","I thought the system was easy to use.
+Ich fand das System einfach zu benutzen.","I think that I would need the support of a technical person to be able to use this system.
+Ich glaube, ich würde die Hilfe einer technisch versierten Person benötigen, um das System benutzen zu können","I found the various functions in this systems were well integrated.
+Ich fand, die verschiedenen Funktionen in diesem System waren gut integriert.","I thought there was too much inconcistency in this system.
+Ich denke, das System enthielt zu viele Inkonsistenzen","I would imagine that most people would learn to use this system very quickly.
+Ich kann mir vorstellen, dass die meisten Menschen den Umgang mit diesem System sehr schnell lernen.","I found the system very cumbersome to use.
+Ich fand das System sehr umständlich zu nutzen.","I felt very confdent using the system.
+Ich fühlte mich bei der Benutzung des Systems sehr sicher.","I needed to learn a lot of things before I could get going with this system.
+Ich musste eine Menge lernen, bevor ich anfangen konnte das System zu verwenden.","How high was your mental demand during the tasks?
+Wie hoch war die geistige Anforderung während der Aufgaben?","How high was your physical demand during the tasks?
+Wie hoch war die körperliche Anforderung während der Aufgaben?","How high was your frustration level during the tasks?
+Wie hcoh war das Frustrations-Level während der Aufgaben?","Additional comments (optional)
+zusätzliche Kommentare (optional)"
+30.05.2023 11:36:59,99,,male / männlich,29,never / nie,7,5,4,1,4,1,4,3,5,2,4,1,3,5,4,
+02.06.2023 10:58:58,98,Feature-to-Pointer,male / männlich,22,less than monthly / weniger als monatlich,7,3,4,1,4,2,4,1,4,3,3,4,4,4,7,
+05.06.2023 12:36:31,1,Feature-to-Pointer,male / männlich,23,less than monthly / weniger als monatlich,6,4,3,2,5,1,4,3,5,2,4,1,2,1,3,kurze Lags bzw. leichte Überlappung der Bildschirme war zu bemerken
+06.06.2023 09:41:54,2,Pointer-to-Feature,male / männlich,23,never / nie,6,4,3,2,4,1,4,2,4,1,4,1,3,3,5,I liked using the system 
+06.06.2023 15:34:16,3,Feature-to-Pointer,male / männlich,25,never / nie,6,4,4,1,4,2,5,2,5,1,3,2,4,3,2,"Ich fand das system weitgehend intuitiv nutzbar, hatte zwischendrin aber kurze Momente, in denen ich bestimmte Funktionen vergessen hatte. Hilfreich waren in dem Moment kurze ""Reset""-Gesten. Teilweise haben unerwartete Gesten mit der ""Nebenhand"" das Bild verändert, aber ich konnte schnell wieder zu meinem Ziel zurueck kommen. Es hat auf jeden Fall Spass gemacht, es auszuprobieren."
+06.06.2023 17:20:25,4,Pointer-to-Feature,female / weiblich,21,never / nie,6,3,2,1,2,3,5,2,3,3,2,4,8,7,8,
+06.06.2023 19:10:53,5,Feature-to-Pointer,male / männlich,21,never / nie,6,4,4,1,4,2,5,2,5,1,4,2,3,4,1,"Die Feinmotorik ist teilweise etwas schwer von der Kamera erkannt worden. Z.B. die Unterscheidung zwischen Faust und offener Hand, dort tendiert man leicht beim runternehmen eine Faust zu formen. "
+07.06.2023 11:19:41,6,Pointer-to-Feature,male / männlich,24,never / nie,4,6,3,1,4,1,3,1,4,4,5,3,5,8,4,Sehr intuitiv zu benutzen. relativ hoher körperlicher Aufwand zur Anwendung der Gestensteuerung
+07.06.2023 17:34:50,7,Feature-to-Pointer,male / männlich,23,never / nie,4,5,3,1,4,1,5,2,5,2,3,2,6,2,8,"Mein Eindruck ist, dass es in erster Linie viel Übung, und nicht unbedingt einer umfangreichen Anleitung bedürfen würde, um dieses System in den Alltag zu integrieren. "
+08.06.2023 10:43:30,8,Pointer-to-Feature,female / weiblich,24,never / nie,7,3,3,1,4,1,4,3,4,2,3,3,4,6,4,"Die Kante in der Mitte war teilweise stoerend. Beim Rauszoomen bin ich teilweise zu nah mit den Haenden aneinander gekommen in der Mitte. Das Auswaehlen fiel mir schwer ohne die zweite Hand zu heben, um in den Modus fuer praezise Bewegung zu kommen."
+08.06.2023 11:32:53,9,Feature-to-Pointer,female / weiblich,20,never / nie,6,4,5,2,4,1,4,1,5,2,4,1,2,6,2,"Der einzige nachteil war das Fadenkreuz, weil am PC kann man einfach direkt klicken."
+09.06.2023 10:04:29,10,Pointer-to-Feature,female / weiblich,24,never / nie,2,2,5,1,4,1,4,1,4,2,3,2,6,2,2,
+09.06.2023 11:56:30,11,Feature-to-Pointer,male / männlich,23,never / nie,6,2,3,1,4,1,5,2,4,1,5,1,3,5,2,
+09.06.2023 15:13:26,12,Pointer-to-Feature,male / männlich,20,never / nie,6,5,4,1,4,2,4,2,3,3,4,2,6,6,6,
+10.06.2023 11:34:49,13,Feature-to-Pointer,female / weiblich,57,never / nie,7,3,5,1,1,5,1,1,2,1,1,1,2,4,2,"nichts fuer ungeduldige Menschen, da genaues Bewegen und Zielen noetig sind. Gesten machen Spass und beugen Sitzhaltungsschaeden vor"
+10.06.2023 12:59:48,14,Pointer-to-Feature,male / männlich,60,never / nie,5,2,5,1,5,1,5,1,5,1,4,1,4,3,2,"Ich bin ueberrascht, wie schnell ich das System begriffen habe und wie Handlungsgesten fast schon automatisiert waren."
+12.06.2023 11:47:08,15,Feature-to-Pointer,female / weiblich,29,never / nie,3,1,2,1,3,1,5,3,5,4,2,1,3,2,2,Mit ein mehr Uebung wird die Verwendung sicher einfacher und weniger fehleranfaellig
+12.06.2023 15:19:56,16,Pointer-to-Feature,female / weiblich,23,never / nie,6,4,4,2,4,1,4,1,5,1,4,1,4,2,1,Das System ist sehr empfindlich
+12.06.2023 17:30:01,17,Feature-to-Pointer,male / männlich,31,never / nie,7,3,5,3,4,1,5,1,3,2,5,3,4,7,3,
+12.06.2023 19:20:26,18,Pointer-to-Feature,female / weiblich,27,never / nie,5,3,4,1,4,1,5,1,5,1,3,2,5,7,2,
+13.06.2023 12:04:39,19,Feature-to-Pointer,female / weiblich,20,never / nie,5,5,4,1,4,2,5,1,5,1,4,2,6,4,5,
+13.06.2023 15:16:33,20,Pointer-to-Feature,female / weiblich,23,never / nie,6,2,3,2,3,1,4,1,3,2,4,2,3,7,7,
+13.06.2023 17:31:41,21,Feature-to-Pointer,female / weiblich,20,never / nie,3,1,3,1,5,2,5,1,5,1,4,3,6,6,3,
+13.06.2023 19:19:30,22,Pointer-to-Feature,male / männlich,29,never / nie,7,5,2,2,3,1,3,3,4,3,3,1,8,6,4,"die Auswahlgeste war nicht intuitiv, das lag vor Allem an der geöffneten Handhaltung, zudem verschiebt man bei der Geste leicht den Auswahlpunkt
+
+Die nötigen Bewegungen waren zu groß
+
+Das System kann interessant sein, wenn mehrere Benutzer auf einer Karte navigieren"
+14.06.2023 09:43:07,23,Feature-to-Pointer,male / männlich,27,never / nie,5,5,3,1,3,1,4,1,4,2,3,1,6,4,7,"Manche Funktionen verhalten sich leicht zitterig, gerade beim abschalten des Feinzooms."
+14.06.2023 15:03:38,24,Pointer-to-Feature,female / weiblich,25,never / nie,7,2,5,2,5,1,5,1,4,1,4,2,1,2,2,
+14.06.2023 16:19:18,25,Feature-to-Pointer,male / männlich,29,never / nie,6,4,2,1,4,2,5,1,4,2,3,2,6,8,6,"Mir war bei der Nutzung des Systems insbesondere beim Zoomen und Verschieben der Karte das Bild zu ""ruckelig""."
+14.06.2023 18:23:48,26,Pointer-to-Feature,female / weiblich,24,never / nie,6,3,3,1,4,1,5,1,3,4,5,1,7,3,4,"Mein Problem war der Winkel zwischen Hand und Bildschirm. Das hat das Auswählen etwas schwieriger gemacht manchmal. Ich musste mich einfach sehr konzentrieren, um nebenher auch beschreiben zu können. "

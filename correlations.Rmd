@@ -1,0 +1,151 @@
+---
+title: "Correlations"
+author: "Jonas Hurst"
+date: "2023-07-11"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+setwd("~/ma")
+library(tidyverse)
+library(bootES)
+library(ggplot2)
+library(corrplot)
+
+set.seed(12345)
+```
+
+
+```{r, include=FALSE}
+source("./get_data.R")
+evaluation_data <- get_evaluation_data()
+results <- get_personal_data()
+
+p2f <- filter(evaluation_data, method == "P2F")
+f2p <- filter(evaluation_data, method == "F2P")
+
+evaluation_data_large <- filter(evaluation_data, state_type == "large")
+evaluation_data_small <- filter(evaluation_data, state_type == "small")
+
+p2f_large <- filter(p2f, state_type == "large")
+p2f_small <- filter(p2f, state_type == "small")
+f2p_large <- filter(f2p, state_type == "large")
+f2p_small <- filter(f2p, state_type == "small")
+```
+
+\newpage
+# Test for Normality: Slips and Time
+
+All:
+```{r, echo=FALSE}
+shapiro.test(evaluation_data$slips)
+shapiro.test(evaluation_data$time)
+```
+
+P2F: large
+```{r, echo=FALSE}
+shapiro.test(p2f_large$slips)
+shapiro.test(p2f_large$time)
+```
+
+P2F: small
+```{r, echo=FALSE}
+shapiro.test(p2f_small$slips)
+shapiro.test(p2f_small$time)
+```
+
+
+\newpage
+# Correlation Slips <-> Time (Pearson)
+
+All data
+
+```{r, echo=FALSE}
+bootES(evaluation_data[c("slips", "time")], R=5000)
+```
+
+Only P2F
+
+```{r, echo=FALSE}
+print("all")
+bootES(p2f[c("slips", "time")], R=5000)
+
+print("large")
+bootES(p2f_large[c("slips", "time")], R=5000)
+
+print("small")
+bootES(p2f_small[c("slips", "time")], R=5000)
+```
+
+Only F2P
+
+```{r, echo=FALSE}
+print("all")
+bootES(f2p[c("slips", "time")], R=5000)
+
+print("large")
+bootES(f2p_large[c("slips", "time")], R=5000)
+
+
+print("small")
+bootES(f2p_small[c("slips", "time")], R=5000)
+```
+
+\newpage
+# Correlation Slips <-> Time (Kendall)
+
+P2F large
+```{r, echo=FALSE}
+cor.test(p2f_large$slips, p2f_large$time, method="kendall")
+```
+
+P2F small
+```{r, echo=FALSE}
+cor.test(p2f_small$slips, p2f_small$time, method="kendall")
+```
+
+F2P large
+```{r, echo=FALSE}
+cor.test(f2p_large$slips, f2p_large$time, method="kendall")
+```
+
+F2P small
+```{r, echo=FALSE}
+cor.test(f2p_small$slips, f2p_small$time, method="kendall")
+```
+
+\newpage
+# Correlation for different variables
+
+```{r, include=FALSE}
+avg_slips_time_perperson <- evaluation_data %>%
+  group_by(id) %>%
+  summarise(slips.mean = mean(slips), time.mean = mean(time))
+
+perperson <- inner_join(x=results, y=avg_slips_time_perperson, by="id")
+
+perperson.p2f <- filter(perperson, method=="P2F")
+perperson.f2p <- filter(perperson, method=="F2P")
+
+corr.p2f <- cor(perperson.p2f[c("sus.score", "tlx.frustration", "tlx.physical_demand", "tlx.mental_demand", "slips.mean", "time.mean")], method="kendall")
+corr.f2p <- cor(perperson.f2p[c("sus.score", "tlx.frustration", "tlx.physical_demand", "tlx.mental_demand", "slips.mean", "time.mean")], method="kendall")
+
+```
+
+
+## P2F
+```{r, echo=FALSE}
+corrplot(corr.p2f)
+corr.p2f
+```
+
+
+## F2P
+```{r, echo=FALSE}
+corrplot(corr.f2p)
+corr.f2p
+```
+
+
