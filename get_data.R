@@ -122,9 +122,11 @@ exploration_data$timeExploredTotal <- ifelse(
 )
   
 
-exploratin_summary = as.data.frame(
+exploration_summary = as.data.frame(
   exploration_data %>%
     group_by(id) %>%
-    summarise(insight = sum(domainvalue), duration = max(timeExploredTotal))
+    summarise(method = first(method), insight = sum(domainvalue), duration = max(timeExploredTotal))
 )
 
+exploration_summary_p2f <- filter(exploration_summary, method == "P2F")
+exploration_summary_f2p <- filter(exploration_summary, method == "F2P")
