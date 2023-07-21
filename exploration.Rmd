@@ -15,6 +15,14 @@ set.seed(12345)
 ```
 
 
+```{r}
+exploration_summary %>%
+  group_by(method) %>%
+  summarise(n=n())
+```
+
+
+\newpage
 # Total exploration time
 
 ```{r, echo=FALSE, fig.asp=0.25}
