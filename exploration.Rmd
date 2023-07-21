@@ -33,6 +33,7 @@ ggplot(total_explorationtime_boot,
   scale_color_manual(values = c("P2F" = p2f_color, "F2P" = f2p_color)) +
   scale_fill_discrete(breaks = c("P2F", "F2P")) +
   theme(axis.title.x = element_blank(), axis.title.y = element_blank(), legend.position = "none")
+ggsave("./graphs/exploration_totaltime.png", width=12, height=3, units = "cm")
 
 total_explorationtime_boot_p2f
 total_explorationtime_boot_f2p
@@ -57,6 +58,7 @@ ggplot(total_insight_boot,
   scale_color_manual(values = c("P2F" = p2f_color, "F2P" = f2p_color)) +
   scale_fill_discrete(breaks = c("P2F", "F2P")) +
   theme(axis.title.x = element_blank(), axis.title.y = element_blank(), legend.position = "none")
+ggsave("./graphs/exploration_totalinsight.png", width=12, height=3, units = "cm")
 
 total_insight_boot_p2f
 total_insight_boot_f2p
@@ -90,6 +92,7 @@ ggplot(accum_insight, aes(x=time, y=insight, group=id, color=method)) +
   scale_color_manual(values = c("P2F" = p2f_color, "F2P" = f2p_color)) +
   xlab("time (min)") +
   ylab("accumulated insight")
+ggsave("./graphs/exploration_timesieries_individual.png", width=12, height=10, units = "cm")
 
 ```
 
@@ -119,16 +122,23 @@ for (curr_time in times) {
 ggplot(accum_insight_boot, aes(x=time, y=mean, ymin=mean.min, ymax=mean.max, group=method, color=method, fill=method)) +
   geom_line() +
   geom_ribbon(color=NA)+
-  scale_color_manual(values = c("P2F" = p2f_color, "F2P" = f2p_color)) +
-  scale_fill_manual(values = c("P2F" = adjustcolor(p2f_color, alpha=0.3), "F2P" = adjustcolor(f2p_color, alpha=0.3))) +
+  scale_color_manual(values = c("P2F" = adjustcolor(p2f_color, alpha=1), "F2P" = adjustcolor(f2p_color, alpha=1))) +
+  scale_fill_manual(values = c("P2F" = adjustcolor(p2f_color, alpha=0.2), "F2P" = adjustcolor(f2p_color, alpha=0.2))) +
   xlab("time (min)") +
   ylab("mean accumulated insight")
+ggsave("./graphs/exploration_timesieries_meanCI.png", width=12, height=10, units = "cm")
 ```
 
 \newpage
 # Correlation
 
 ```{r, echo=FALSE}
+exp_insight <- inner_join(results[c("id", "method", "exp.maps", "exp.energy")], exploration_summary, by="id")
 
+print("corr exp.maps <-> insight, using kendall as exp is rank")
+cor.test(exp_insight$exp.maps, exp_insight$insight, method="kendall")
+
+print("corr exp.energy <-> insight, using kendall as exp is rank")
+cor.test(exp_insight$exp.energy, exp_insight$insight, method="kendall")
 ```
 
