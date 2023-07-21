@@ -92,6 +92,7 @@ evaluation_data$valid <- as.logical(evaluation_data$valid)
 evaluation_data <- filter(evaluation_data, valid)
 #evaluation_data <- filter(evaluation_data, time < 60)
 
+evaluation_data$failure_meaning <- ""
 evaluation_data$failure_meaning[evaluation_data["failure"] == 1] <- "fail"
 evaluation_data$failure_meaning[evaluation_data["failure"] == 0] <- "success"
 
