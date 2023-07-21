@@ -1,0 +1,134 @@
+---
+title: "Exploration experiment"
+author: "Jonas Hurst"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(bootES)
+source("./get_data.R")
+set.seed(12345)
+```
+
+
+# Total exploration time
+
+```{r, echo=FALSE, fig.asp=0.25}
+total_explorationtime_boot_p2f <- bootES(exploration_summary_p2f$duration, R=5000)
+total_explorationtime_boot_f2p <- bootES(exploration_summary_f2p$duration, R=5000)
+total_explorationtime_boot <- data.frame(
+  method = c("P2F", "F2P"),
+  mean = c(total_explorationtime_boot_p2f$t0, total_explorationtime_boot_f2p$t0),
+  mean.min = c(total_explorationtime_boot_p2f$bounds[1], total_explorationtime_boot_f2p$bounds[1]),
+  mean.max = c(total_explorationtime_boot_p2f$bounds[2], total_explorationtime_boot_f2p$bounds[2])
+)
+
+ggplot(total_explorationtime_boot,
+       aes(y = method, x=mean, xmin = mean.min, xmax = mean.max, color = method)) +
+  geom_pointrange() +
+  scale_color_manual(values = c("P2F" = p2f_color, "F2P" = f2p_color)) +
+  scale_fill_discrete(breaks = c("P2F", "F2P")) +
+  theme(axis.title.x = element_blank(), axis.title.y = element_blank(), legend.position = "none")
+
+total_explorationtime_boot_p2f
+total_explorationtime_boot_f2p
+bootES(exploration_summary, data.col="duration", group.col = "method", contrast=c("P2F", "F2P"), R=5000)
+```
+
+\newpage
+# Total insights gotten
+```{r, echo=FALSE, fig.asp=0.25}
+total_insight_boot_p2f <- bootES(exploration_summary_p2f$insight, R=5000)
+total_insight_boot_f2p <- bootES(exploration_summary_f2p$insight, R=5000)
+total_insight_boot <- data.frame(
+  method = c("P2F", "F2P"),
+  mean = c(total_insight_boot_p2f$t0, total_insight_boot_f2p$t0),
+  mean.min = c(total_insight_boot_p2f$bounds[1], total_insight_boot_f2p$bounds[1]),
+  mean.max = c(total_insight_boot_p2f$bounds[2], total_insight_boot_f2p$bounds[2])
+)
+
+ggplot(total_insight_boot,
+       aes(y = method, x=mean, xmin = mean.min, xmax = mean.max, color = method)) +
+  geom_pointrange() +
+  scale_color_manual(values = c("P2F" = p2f_color, "F2P" = f2p_color)) +
+  scale_fill_discrete(breaks = c("P2F", "F2P")) +
+  theme(axis.title.x = element_blank(), axis.title.y = element_blank(), legend.position = "none")
+
+total_insight_boot_p2f
+total_insight_boot_f2p
+bootES(exploration_summary, data.col="insight", group.col = "method", contrast=c("P2F", "F2P"), R=5000)
+```
+
+\newpage
+# Insight by time
+```{r, echo=FALSE}
+max_id <- max(exploration_summary$id)
+times <- 0:max(exploration_summary$duration)+1
+
+accum_insight <- data.frame(matrix(ncol=4, nrow=0, dimnames=list(NULL, c("id", "method", "time", "insight"))))
+
+for (curr_time in times) {
+  
+  to_append <- exploration_data %>%
+    filter(insightReceivedAt < curr_time) %>%
+    group_by(id) %>%
+    summarise(method=first(method), insight=sum(domainvalue)) %>%
+    as.data.frame()
+  
+  to_append$time <- curr_time
+  
+  accum_insight <- rbind(accum_insight, to_append)
+}
+
+
+ggplot(accum_insight, aes(x=time, y=insight, group=id, color=method)) +
+  geom_line() +
+  scale_color_manual(values = c("P2F" = p2f_color, "F2P" = f2p_color)) +
+  xlab("time (min)") +
+  ylab("accumulated insight")
+
+```
+
+```{r, echo=FALSE}
+
+accum_insight_boot <- data.frame(matrix(ncol=5, nrow=0, dimnames=list(NULL, c("method", "time", "mean", "mean.min", "mean.max"))))
+
+for (curr_time in times) {
+  filtered_time <- filter(accum_insight, time==curr_time)
+  filtered_time_p2f <- filter(filtered_time, method=="P2F")
+  filtered_time_f2p <- filter(filtered_time, method=="F2P")
+  
+  boot_p2f <- bootES(filtered_time_p2f$insight, R=5000)
+  boot_f2p <- bootES(filtered_time_f2p$insight, R=5000)
+  
+  result_boot <- data.frame(
+    method = c("P2F", "F2P"),
+    time = c(curr_time, curr_time),
+    mean = c(boot_p2f$t0, boot_f2p$t0),
+    mean.min = c(boot_p2f$bounds[1], boot_f2p$bounds[1]),
+    mean.max = c(boot_p2f$bounds[2], boot_f2p$bounds[2])
+  )
+  
+  accum_insight_boot <- rbind(accum_insight_boot, result_boot)
+}
+
+ggplot(accum_insight_boot, aes(x=time, y=mean, ymin=mean.min, ymax=mean.max, group=method, color=method, fill=method)) +
+  geom_line() +
+  geom_ribbon(color=NA)+
+  scale_color_manual(values = c("P2F" = p2f_color, "F2P" = f2p_color)) +
+  scale_fill_manual(values = c("P2F" = adjustcolor(p2f_color, alpha=0.3), "F2P" = adjustcolor(f2p_color, alpha=0.3))) +
+  xlab("time (min)") +
+  ylab("mean accumulated insight")
+```
+
+\newpage
+# Correlation
+
+```{r, echo=FALSE}
+
+```
+
