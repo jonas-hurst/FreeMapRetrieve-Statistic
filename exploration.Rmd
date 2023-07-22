@@ -104,14 +104,17 @@ ggplot(accum_insight, aes(x=time, y=insight, group=id, color=method)) +
   geom_line() +
   scale_color_manual(values = c("P2F" = p2f_color, "F2P" = f2p_color)) +
   xlab("time (min)") +
-  ylab("accumulated insight")
+  ylab("accumulated insight") +
+  scale_x_continuous(breaks = seq(0, max(accum_insight$time), by = 5)) +
+  scale_y_continuous(breaks = round(seq(min(accum_insight$insight), max(accum_insight$insight), by = 20), -1)) +
+  theme(legend.title = element_blank())
 ggsave("./graphs/exploration_timesieries_individual.png", width=15, height=10, units = "cm")
 
 ```
 
 ```{r, echo=FALSE}
-
-accum_insight_boot <- data.frame(matrix(ncol=5, nrow=0, dimnames=list(NULL, c("method", "time", "mean", "mean.min", "mean.max"))))
+colnames <- c("method", "time", "mean", "mean.min", "mean.max")
+accum_insight_boot <- data.frame(matrix(ncol=length(colnames), nrow=0, dimnames=list(NULL, colnames)))
 
 for (curr_time in times) {
   filtered_time <- filter(accum_insight, time==curr_time)
@@ -120,13 +123,18 @@ for (curr_time in times) {
   
   boot_p2f <- bootES(filtered_time_p2f$insight, R=5000)
   boot_f2p <- bootES(filtered_time_f2p$insight, R=5000)
+  boot_diff <- bootES(filtered_time, data.col="insight", group.col = "method", contrast=c("P2F", "F2P"), R=5000)
   
   result_boot <- data.frame(
-    method = c("P2F", "F2P"),
-    time = c(curr_time, curr_time),
-    mean = c(boot_p2f$t0, boot_f2p$t0),
-    mean.min = c(boot_p2f$bounds[1], boot_f2p$bounds[1]),
-    mean.max = c(boot_p2f$bounds[2], boot_f2p$bounds[2])
+    method = c("P2F", "F2P", "diff"),
+    time = c(curr_time, curr_time, curr_time),
+    mean = c(boot_p2f$t0, boot_f2p$t0, boot_diff$t0),
+    mean.min = c(boot_p2f$bounds[1], boot_f2p$bounds[1], boot_diff$bounds[1]),
+    mean.max = c(boot_p2f$bounds[2], boot_f2p$bounds[2], boot_diff$bounds[2])
+  )
+  
+  result_diff <- data.frame(
+    time = curr_time
   )
   
   accum_insight_boot <- rbind(accum_insight_boot, result_boot)
@@ -135,11 +143,16 @@ for (curr_time in times) {
 ggplot(accum_insight_boot, aes(x=time, y=mean, ymin=mean.min, ymax=mean.max, group=method, color=method, fill=method)) +
   geom_line() +
   geom_ribbon(color=NA)+
-  scale_color_manual(values = c("P2F" = adjustcolor(p2f_color, alpha=1), "F2P" = adjustcolor(f2p_color, alpha=1))) +
-  scale_fill_manual(values = c("P2F" = adjustcolor(p2f_color, alpha=0.2), "F2P" = adjustcolor(f2p_color, alpha=0.2))) +
+  scale_color_manual(values = c("P2F" = adjustcolor(p2f_color, alpha=1), "F2P" = adjustcolor(f2p_color, alpha=1), "diff"="darkgreen")) +
+  scale_fill_manual(values = c("P2F" = adjustcolor(p2f_color, alpha=0.2), "F2P" = adjustcolor(f2p_color, alpha=0.2), "diff"=adjustcolor("darkgreen", alpha=0.2))) +
   xlab("time (min)") +
-  ylab("mean accumulated insight")
-ggsave("./graphs/exploration_timesieries_meanCI.png", width=15, height=10, units = "cm")
+  ylab("mean accumulated insight") +
+  scale_x_continuous(breaks = seq(0, max(accum_insight_boot$time), by = 5)) +
+  scale_y_continuous(breaks = round(seq(min(accum_insight_boot$mean.min), max(accum_insight_boot$mean.max), by = 10), -1)) +
+  theme(legend.title = element_blank())
+ggsave("./graphs/exploration_timesieries_meanCI.png", width=15, height=12, units = "cm")
+
+
 ```
 
 \newpage
