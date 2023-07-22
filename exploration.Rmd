@@ -15,7 +15,8 @@ set.seed(12345)
 ```
 
 
-```{r}
+Participants per group in exploration experiment. One participants video was damaged during transfer.
+```{r, echo=FALSE}
 exploration_summary %>%
   group_by(method) %>%
   summarise(n=n())
@@ -50,6 +51,10 @@ bootES(exploration_summary, data.col="duration", group.col = "method", contrast=
 
 \newpage
 # Total insights gotten
+
+Total insight a participant has received is measured by the sum of all domain values
+which were assigned to this participant's insights.
+
 ```{r, echo=FALSE, fig.asp=0.25}
 total_insight_boot_p2f <- bootES(exploration_summary_p2f$insight, R=5000)
 total_insight_boot_f2p <- bootES(exploration_summary_f2p$insight, R=5000)
@@ -100,7 +105,7 @@ ggplot(accum_insight, aes(x=time, y=insight, group=id, color=method)) +
   scale_color_manual(values = c("P2F" = p2f_color, "F2P" = f2p_color)) +
   xlab("time (min)") +
   ylab("accumulated insight")
-ggsave("./graphs/exploration_timesieries_individual.png", width=12, height=10, units = "cm")
+ggsave("./graphs/exploration_timesieries_individual.png", width=15, height=10, units = "cm")
 
 ```
 
@@ -134,7 +139,7 @@ ggplot(accum_insight_boot, aes(x=time, y=mean, ymin=mean.min, ymax=mean.max, gro
   scale_fill_manual(values = c("P2F" = adjustcolor(p2f_color, alpha=0.2), "F2P" = adjustcolor(f2p_color, alpha=0.2))) +
   xlab("time (min)") +
   ylab("mean accumulated insight")
-ggsave("./graphs/exploration_timesieries_meanCI.png", width=12, height=10, units = "cm")
+ggsave("./graphs/exploration_timesieries_meanCI.png", width=15, height=10, units = "cm")
 ```
 
 \newpage
