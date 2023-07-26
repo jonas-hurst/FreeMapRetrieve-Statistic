@@ -15,7 +15,7 @@ f2p_color = rgb(0, 0, 1, 1/2)
 ###################################
 
 # load csv file
-results <- read.csv(file = 'questionnaire.csv')
+results <- read.csv(file = './data/questionnaire.csv')
 colnames(results) <- c("time",
                        "id",
                        "method",
@@ -85,7 +85,7 @@ results.f2p <- filter(results, method == "F2P")
 
 
 # load data
-evaluation_data <- read_excel("./evaluation.xlsx")
+evaluation_data <- read_excel("./data/evaluation.xlsx")
 evaluation_data$valid <- as.logical(evaluation_data$valid)
 
 # filter data
@@ -113,7 +113,7 @@ f2p_small <- filter(f2p, state_type == "small")
 ##  Get data from exploration exploration  ##
 #############################################
 
-exploration_data <- read_excel("./exploration.xlsx")
+exploration_data <- read_excel("./data/exploration.xlsx")
 exploration_data$insightReceivedAt <- minute(exploration_data$time) + second(exploration_data$time) / 60
 exploration_data$timeExploredTotal <- ifelse(
   !is.na(exploration_data$overall_time),
