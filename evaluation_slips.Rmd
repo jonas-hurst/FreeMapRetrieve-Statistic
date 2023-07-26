@@ -16,6 +16,7 @@ setwd("~/ma")
 library(tidyverse)
 library(bootES)
 library(ggplot2)
+library(gridExtra) # for putting two ggplots next two each other
 
 set.seed(12345)
 
@@ -179,11 +180,101 @@ bootES(f2p, data.col="slips", group.col = "state_type", contrast=c("large", "sma
 \newpage
 ### Learnability
 
+Large polygons
+
 ```{r, echo=FALSE}
-ggplot(evaluation_data, aes(x=state_number, y=slips, group=id, color=method))+
-  geom_line() +
-  geom_point() +
-  scale_color_manual(values = c("P2F" = p2f_color, "F2P" = f2p_color))
+
+slips_by_polygon_large <- data.frame(matrix(ncol=5, nrow=0, dimnames=list(NULL, c("state_number", "method", "mean", "mean.min", "mean.max"))))
+
+for (retrieve_nr in 1:3) {
+  bootresult_large_p2f <- bootES(filter(p2f, state_number == retrieve_nr)$slips, R=5000)
+  bootresult_large_f2p <- bootES(filter(f2p, state_number == retrieve_nr)$slips, R=5000)
+  
+  bootresult_large <- data.frame(
+    state_number = c(retrieve_nr, retrieve_nr),
+    method = c("P2F", "F2P"),
+    mean = c(bootresult_large_p2f$t0, bootresult_large_f2p$t0),
+    mean.min = c(bootresult_large_p2f$bounds[1], bootresult_large_f2p$bounds[1]),
+    mean.max = c(bootresult_large_p2f$bounds[2], bootresult_large_f2p$bounds[2])
+  )
+  
+  slips_by_polygon_large <- rbind(slips_by_polygon_large, bootresult_large)
+}
+
+
+scale_large_min <- min(slips_by_polygon_large$mean.min)
+scale_large_max <- max(slips_by_polygon_large$mean.max)
+plt <- grid.arrange(
+  ggplot(filter(slips_by_polygon_large, method=="P2F"), aes(x=state_number, y=mean, ymin=mean.min, ymax=mean.max)) +
+    geom_point(color=p2f_color) +
+    geom_line(color=p2f_color) +
+    geom_errorbar(aes(width=0.2), color=p2f_color) +
+    ylim(scale_large_min, scale_large_max) +
+    scale_x_continuous(breaks = 1:3) +
+    xlab("state number (P2F)") +
+    ylab("slips") +
+    theme(aspect.ratio = 2),
+  ggplot(filter(slips_by_polygon_large, method=="F2P"), aes(x=state_number, y=mean, ymin=mean.min, ymax=mean.max)) +
+    geom_point(color=f2p_color) +
+    geom_line(color=f2p_color) +
+    geom_errorbar(aes(width=0.2), color=f2p_color) +
+    ylim(scale_large_min, scale_large_max) +
+    scale_x_continuous(breaks = 1:3) +
+    theme(axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), aspect.ratio = 2) +
+    xlab("state number (F2P)"),
+  ncol=2
+)
+ggsave(plot=plt, "./graphs/learn_slips_large.png", width=11.5, height=9, units = "cm")
+plot(plt)
+
+```
+
+Small polygons
+
+```{r, echo=FALSE}
+
+slips_by_polygon_small <- data.frame(matrix(ncol=5, nrow=0, dimnames=list(NULL, c("state_number", "method", "mean", "mean.min", "mean.max"))))
+
+for (retrieve_nr in 4:6) {
+  bootresult_small_p2f <- bootES(filter(p2f, state_number == retrieve_nr)$slips, R=5000)
+  bootresult_small_f2p <- bootES(filter(f2p, state_number == retrieve_nr)$slips, R=5000)
+  
+  bootresult_small <- data.frame(
+    state_number = c(retrieve_nr, retrieve_nr),
+    method = c("P2F", "F2P"),
+    mean = c(bootresult_small_p2f$t0, bootresult_small_f2p$t0),
+    mean.min = c(bootresult_small_p2f$bounds[1], bootresult_small_f2p$bounds[1]),
+    mean.max = c(bootresult_small_p2f$bounds[2], bootresult_small_f2p$bounds[2])
+  )
+  
+  slips_by_polygon_small <- rbind(slips_by_polygon_small, bootresult_small)
+}
+
+
+scale_small_min <- min(slips_by_polygon_small$mean.min)
+scale_small_max <- max(slips_by_polygon_small$mean.max)
+plt2 <- grid.arrange(
+  ggplot(filter(slips_by_polygon_small, method=="P2F"), aes(x=state_number, y=mean, ymin=mean.min, ymax=mean.max, group=method, color=method)) +
+    geom_point(color=p2f_color) +
+    geom_line(color=p2f_color) +
+    geom_errorbar(aes(width=0.2), color=p2f_color) +
+    ylim(scale_small_min, scale_small_max) +
+    scale_x_continuous(breaks = 4:6) +
+    xlab("state number (P2F)") +
+    ylab("slips") +
+    theme(aspect.ratio = 2),
+  ggplot(filter(slips_by_polygon_small, method=="F2P"), aes(x=state_number, y=mean, ymin=mean.min, ymax=mean.max)) +
+    geom_point(color=f2p_color) +
+    geom_line(color=f2p_color) +
+    geom_errorbar(aes(width=0.2), color=f2p_color) +
+    ylim(scale_small_min, scale_small_max) +
+    scale_x_continuous(breaks = 4:6) +
+    theme(axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), aspect.ratio = 2) +
+    xlab("state number (F2P)"),
+  ncol=2
+)
+ggsave(plot=plt2, "./graphs/learn_slips_small.png", width=11.5, height=9, units = "cm")
+plot(plt2)
 ```
 Todo: Test this with Linear Mixed Model
 
