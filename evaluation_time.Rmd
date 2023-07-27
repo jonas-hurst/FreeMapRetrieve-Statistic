@@ -228,7 +228,7 @@ ggplot(time_by_polygon_large, aes(x=state_number, y=mean, ymin=mean.min, ymax=me
   ylab("Retrieve time (s)") +
   facet_grid(cols=vars(method)) +
   theme(legend.position = "none")
-ggsave("./graphs/learn_time_large.png", width=11.5, height=9, units = "cm")
+ggsave("./graphs/learn_time_large.png", width=8, height=8, units = "cm")
 
 ```
 
@@ -267,7 +267,7 @@ ggplot(time_by_polygon_small, aes(x=state_number, y=mean, ymin=mean.min, ymax=me
   ylab("Retrieve time (s)") +
   facet_grid(cols=vars(method)) +
   theme(legend.position = "none")
-ggsave("./graphs/learn_time_small.png", width=11.5, height=9, units = "cm")
+ggsave("./graphs/learn_time_small.png", width=8, height=8, units = "cm")
 
 ```
 Todo: test this with Linear Mixed Model
