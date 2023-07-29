@@ -13,6 +13,7 @@ library(tidyverse)
 library(bootES)
 library(ggplot2)
 library(corrplot)
+library(writexl)
 
 set.seed(12345)
 ```
@@ -22,14 +23,119 @@ set.seed(12345)
 source("./get_data.R")
 ```
 
+# Test for normality
+
+Shapiro-Wilk normality test
+
+```{r, echo=FALSE}
+avg_slips_time_perperson <- evaluation_data %>%
+  group_by(id) %>%
+  summarise(slips.mean = mean(slips), time.mean = mean(time))
+
+cols_to_analyze <- c("method", "sus.score", "tlx.frustration", "tlx.physical_demand", "tlx.mental_demand", "slips.mean", "time.mean", "insight", "duration")
+
+perperson <- results %>%
+  inner_join(y=avg_slips_time_perperson, by="id") %>%
+  left_join(y=exploration_summary[c("id", "insight", "duration")], by="id") %>%
+  select(all_of(cols_to_analyze))
+
+perperson.p2f <- filter(perperson, method=="P2F")
+perperson.f2p <- filter(perperson, method=="F2P")
+
+
+for (colname in colnames(perperson)) {
+  if (colname == "method") {
+    next
+  }
+  
+  p2f.t <- shapiro.test(perperson.p2f[,colname])
+  f2p.t <- shapiro.test(perperson.f2p[,colname])
+  print(paste(colname, ":", "P2F", round(p2f.t$p.value, 3), "F2P", round(f2p.t$p.value, 3)))
+}
+
+```
+
+\newpage
+# Correlation for different variables
+
+## P2F
+```{r, echo=FALSE}
+corr.p2f.estimate <- data.frame(matrix(ncol=3, nrow=0, dimnames=list(NULL, c("first", "second", "estimate"))))
+corr.p2f.pvalue <- data.frame(matrix(ncol=3, nrow=0, dimnames=list(NULL, c("first", "second", "pvalue"))))
+
+for (i in 2:length(cols_to_analyze)) {
+  for (j in i:length(cols_to_analyze)) {
+    t <- cor.test(perperson.p2f[,i], perperson.p2f[,j], method="kendall", use="pairwise.complete.obs", exact = FALSE)
+    
+    corr_estimate_app <- data.frame(
+      first = c(cols_to_analyze[i]),
+      second = c(cols_to_analyze[j]),
+      estimate = round(t$estimate[1], 2)
+    )
+    corr_pvalue_app <- data.frame(
+      first = c(cols_to_analyze[i]),
+      second = c(cols_to_analyze[j]),
+      estimate = round(t$p.value, 5)
+    )
+    
+    corr.p2f.estimate <- rbind(corr.p2f.estimate, corr_estimate_app)
+    corr.p2f.pvalue <- rbind(corr.p2f.pvalue, corr_pvalue_app)
+    
+  }
+}
+
+corr.p2f.estimate.matrix <- pivot_wider(corr.p2f.estimate, names_from = second, values_from = estimate)
+corr.p2f.pvalue.matrix <- pivot_wider(corr.p2f.pvalue, names_from = second, values_from=estimate)
+
+corr.p2f.estimate.matrix
+corr.p2f.pvalue.matrix
+```
+
+\newpage
+## F2P
+```{r, echo=FALSE}
+corr.f2p.estimate <- data.frame(matrix(ncol=3, nrow=0, dimnames=list(NULL, c("first", "second", "estimate"))))
+corr.f2p.pvalue <- data.frame(matrix(ncol=3, nrow=0, dimnames=list(NULL, c("first", "second", "pvalue"))))
+
+for (i in 2:length(cols_to_analyze)) {
+  for (j in i:length(cols_to_analyze)) {
+    t <- cor.test(perperson.f2p[,i], perperson.f2p[,j], method="kendall", use="pairwise.complete.obs", exact = FALSE)
+    
+    corr_estimate_app <- data.frame(
+      first = c(cols_to_analyze[i]),
+      second = c(cols_to_analyze[j]),
+      estimate = round(t$estimate[1], 2)
+    )
+    corr_pvalue_app <- data.frame(
+      first = c(cols_to_analyze[i]),
+      second = c(cols_to_analyze[j]),
+      estimate = round(t$p.value, 5)
+    )
+    
+    corr.f2p.estimate <- rbind(corr.f2p.estimate, corr_estimate_app)
+    corr.f2p.pvalue <- rbind(corr.f2p.pvalue, corr_pvalue_app)
+    
+  }
+}
+
+corr.f2p.estimate.matrix <- pivot_wider(corr.f2p.estimate, names_from = second, values_from = estimate)
+corr.f2p.pvalue.matrix <- pivot_wider(corr.f2p.pvalue, names_from = second, values_from=estimate)
+
+corr.f2p.estimate.matrix
+corr.f2p.pvalue.matrix
+```
+
+
+```{r, include=FALSE}
+write_xlsx(corr.p2f.estimate.matrix, "corr/p2f_estimate.xlsx", col_names=TRUE)
+write_xlsx(corr.p2f.pvalue.matrix, "corr/p2f_pvalue.xlsx", col_names=TRUE)
+write_xlsx(corr.f2p.estimate.matrix, "corr/f2p_estimate.xlsx", col_names=TRUE)
+write_xlsx(corr.f2p.pvalue.matrix, "corr/f2p_pvalue.xlsx", col_names=TRUE)
+```
+
 \newpage
 # Test for Normality: Slips and Time
 
-All:
-```{r, echo=FALSE}
-shapiro.test(evaluation_data$slips)
-shapiro.test(evaluation_data$time)
-```
 
 P2F: large
 ```{r, echo=FALSE}
@@ -45,94 +151,47 @@ shapiro.test(p2f_small$time)
 
 
 \newpage
-# Correlation Slips <-> Time (Pearson)
-
-All data
-
-```{r, echo=FALSE}
-bootES(evaluation_data[c("slips", "time")], R=5000)
-```
-
-Only P2F
-
-```{r, echo=FALSE}
-print("all")
-bootES(p2f[c("slips", "time")], R=5000)
-
-print("large")
-bootES(p2f_large[c("slips", "time")], R=5000)
-
-print("small")
-bootES(p2f_small[c("slips", "time")], R=5000)
-```
-
-Only F2P
-
-```{r, echo=FALSE}
-print("all")
-bootES(f2p[c("slips", "time")], R=5000)
-
-print("large")
-bootES(f2p_large[c("slips", "time")], R=5000)
-
-
-print("small")
-bootES(f2p_small[c("slips", "time")], R=5000)
-```
-
-\newpage
 # Correlation Slips <-> Time (Kendall)
 
 P2F large
 ```{r, echo=FALSE}
-cor.test(p2f_large$slips, p2f_large$time, method="kendall")
+cor.test(p2f_large$slips, p2f_large$time, method="kendall", exact=FALSE)
 ```
 
 P2F small
 ```{r, echo=FALSE}
-cor.test(p2f_small$slips, p2f_small$time, method="kendall")
+cor.test(p2f_small$slips, p2f_small$time, method="kendall", exact=FALSE)
 ```
 
 F2P large
 ```{r, echo=FALSE}
-cor.test(f2p_large$slips, f2p_large$time, method="kendall")
+cor.test(f2p_large$slips, f2p_large$time, method="kendall", exact=FALSE)
 ```
 
 F2P small
 ```{r, echo=FALSE}
-cor.test(f2p_small$slips, f2p_small$time, method="kendall")
+cor.test(f2p_small$slips, f2p_small$time, method="kendall", exact=FALSE)
 ```
 
 \newpage
-# Correlation for different variables
+# Correlation Slips <-> Time (Pearson)
 
-```{r, include=FALSE}
-avg_slips_time_perperson <- evaluation_data %>%
-  group_by(id) %>%
-  summarise(slips.mean = mean(slips), time.mean = mean(time))
-
-perperson <- inner_join(x=results, y=avg_slips_time_perperson, by="id")
-
-perperson.p2f <- filter(perperson, method=="P2F")
-perperson.f2p <- filter(perperson, method=="F2P")
-
-corr.p2f <- cor(perperson.p2f[c("sus.score", "tlx.frustration", "tlx.physical_demand", "tlx.mental_demand", "slips.mean", "time.mean")], method="kendall")
-corr.f2p <- cor(perperson.f2p[c("sus.score", "tlx.frustration", "tlx.physical_demand", "tlx.mental_demand", "slips.mean", "time.mean")], method="kendall")
-
-```
-
-
-## P2F
+P2F large
 ```{r, echo=FALSE}
-corrplot(corr.p2f)
-corr.p2f
+cor.test(p2f_large$slips, p2f_large$time)
 ```
 
-
-## F2P
+P2F small
 ```{r, echo=FALSE}
-corrplot(corr.f2p)
-corr.f2p
+cor.test(p2f_small$slips, p2f_small$time)
 ```
 
+F2P large
+```{r, echo=FALSE}
+cor.test(f2p_large$slips, f2p_large$time)
+```
 
+F2P small
+```{r, echo=FALSE}
+cor.test(f2p_small$slips, f2p_small$time)
+```
