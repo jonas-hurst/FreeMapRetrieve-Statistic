@@ -213,7 +213,7 @@ ggplot(slips_by_polygon_large, aes(x=state_number, y=mean, ymin=mean.min, ymax=m
   #ylim(scale_large_min, scale_large_max) +
   scale_y_continuous(breaks=seq(floor(scale_large_min), ceiling(scale_large_max), by=1))+
   scale_x_continuous(breaks = 1:3) +
-  xlab("State number") +
+  xlab("Number of polygon") +
   ylab("Slips") +
   facet_grid(cols=vars(method)) +
   theme(legend.position = "none")
@@ -253,7 +253,7 @@ ggplot(slips_by_polygon_small, aes(x=state_number, y=mean, ymin=mean.min, ymax=m
   scale_color_manual(values = c("P2F" = p2f_color, "F2P" = f2p_color))+
   ylim(scale_small_min, scale_small_max) +
   scale_x_continuous(breaks = 4:6) +
-  xlab("State number") +
+  xlab("Number of polygon") +
   ylab("Slips") +
   facet_grid(cols=vars(method)) +
   theme(legend.position = "none")
