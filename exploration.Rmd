@@ -156,6 +156,36 @@ ggsave("./graphs/exploration_timesieries_meanCI.png", width=15, height=12, units
 ```
 
 \newpage
+# Category: Needs-Retrieve vs Doesnt need Retrieve
+
+```{r, echo=FALSE, fig.asp=0.25}
+expl_p2f_percInsights_bootresult <- bootES(exploration_summary_p2f$percInsightsRetrieveUsed, R=5000)
+expl_f2p_percInsights_bootresult <- bootES(exploration_summary_f2p$percInsightsRetrieveUsed, R=5000)
+
+expl_percInsights_bootresult <- data.frame(
+  method = c("P2F", "F2P"),
+  mean = c(expl_p2f_percInsights_bootresult$t0, expl_f2p_percInsights_bootresult$t0),
+  mean.min = c(expl_p2f_percInsights_bootresult$bounds[1], expl_f2p_percInsights_bootresult$bounds[1]),
+  mean.max = c(expl_p2f_percInsights_bootresult$bounds[2], expl_f2p_percInsights_bootresult$bounds[2])
+)
+
+ggplot(expl_percInsights_bootresult,
+       aes(y = method, x=mean, xmin = mean.min, xmax = mean.max, color = method)) +
+  geom_pointrange() +
+  scale_color_manual(values = c("P2F" = p2f_color, "F2P" = f2p_color)) +
+  scale_fill_discrete(breaks = c("P2F", "F2P")) +
+  theme(axis.title.x = element_blank(), axis.title.y = element_blank(), legend.position = "none")
+ggsave("./graphs/exploration_insightsbyRetrieve.png", width=12, height=3, units = "cm")
+
+expl_p2f_percInsights_bootresult
+expl_f2p_percInsights_bootresult
+bootES(exploration_summary, data.col = "percInsightsRetrieveUsed", group.col = "method", contrast = c("P2F", "F2P"), R=5000)
+
+```
+
+
+
+\newpage
 # Correlation
 
 ```{r, echo=FALSE}
