@@ -120,13 +120,26 @@ exploration_data$timeExploredTotal <- ifelse(
   minute(exploration_data$overall_time) + second(exploration_data$overall_time)/60,
   0
 )
-  
 
-exploration_summary = as.data.frame(
+exploration_summary <- as.data.frame(
   exploration_data %>%
     group_by(id) %>%
-    summarise(method = first(method), insight = sum(domainvalue), duration = max(timeExploredTotal))
-)
+    summarise(method = first(method), insight = sum(domainvalue), duration = max(timeExploredTotal),
+              insightsRetrieveUsed = sum(needs_retrieve),
+              insightsRetrieveNotUsed = sum((function(col, value) col == value)(needs_retrieve, 0)),
+              overviewInsights = sum((function(col, value) col == value)(category, 1)),
+              patternInsights = sum((function(col, value) col == value)(category, 2)),
+              hypothesisNoBackgroundInsights = sum((function(col, value) col == value)(category, 3)),
+              hypothesisBackgroundInsights = sum((function(col, value) col == value)(category, 4)))
+  )
+
+exploration_summary$percInsightsRetrieveUsed <- 
+  exploration_summary$insightsRetrieveUsed / (exploration_summary$insightsRetrieveUsed + 
+                                                exploration_summary$insightsRetrieveNotUsed)
+
+exploration_summary$percInsightsRetrieveNotUsed <- 
+  exploration_summary$insightsRetrieveNotUsed / (exploration_summary$insightsRetrieveUsed + 
+                                                exploration_summary$insightsRetrieveNotUsed)
 
 exploration_summary_p2f <- filter(exploration_summary, method == "P2F")
 exploration_summary_f2p <- filter(exploration_summary, method == "F2P")
