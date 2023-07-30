@@ -134,11 +134,11 @@ exploration_summary <- as.data.frame(
   )
 
 exploration_summary$percInsightsRetrieveUsed <- 
-  exploration_summary$insightsRetrieveUsed / (exploration_summary$insightsRetrieveUsed + 
+  exploration_summary$insightsRetrieveUsed*100 / (exploration_summary$insightsRetrieveUsed + 
                                                 exploration_summary$insightsRetrieveNotUsed)
 
 exploration_summary$percInsightsRetrieveNotUsed <- 
-  exploration_summary$insightsRetrieveNotUsed / (exploration_summary$insightsRetrieveUsed + 
+  exploration_summary$insightsRetrieveNotUsed*100 / (exploration_summary$insightsRetrieveUsed + 
                                                 exploration_summary$insightsRetrieveNotUsed)
 
 exploration_summary_p2f <- filter(exploration_summary, method == "P2F")
