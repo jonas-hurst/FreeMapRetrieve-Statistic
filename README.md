@@ -1,7 +1,7 @@
-# Statistics calculation for Master's thesis
+# Statistical Calculation used in FreeMapRetrieve publication
 
-R scripts for all statistical calculations in my Master's thesis.
-Also creates and saves all graphs used in thesis Result section
+R scripts for all statistical calculations in the FreeMapRetrieve paper.
+Also creates and saves all graphs used in the paper.
 
 ### Technical
 
