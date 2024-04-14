@@ -20,5 +20,5 @@ Data is imported and pre-processed in `get_data.R` file. This file is then impor
 * Figure 6: created in `demographic.Rmd`
 * Figure 7: created in `exploration.Rmd`
 
-It is recommended to use knitr to create PDF reports from each `.Rmd` file. The reports include all statistical results, as well as all the graphs. The graphs itself are stored as .png files inside the `graphs` directory.
+It is recommended to use knitr to create PDF reports from each `.Rmd` file. Simply open any of the `.Rmd` files in RStudio and press the `Knit` button, and the corresponding PDF report will be created. The reports include all statistical results, as well as all the graphs. The graphs itself are stored as .png files inside the `graphs` directory.
 
